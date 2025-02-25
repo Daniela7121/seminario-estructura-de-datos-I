@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#define MAX 100
+#define MAX 100  // Tamaño máximo de la pila
 
 class Empleado {
 public:
@@ -18,12 +18,13 @@ public:
 
 class Pila {
 private:
-    Empleado datos[MAX];
-    int tope;
+    Empleado datos[MAX]; // Arreglo para almacenar los elementos de la pila
+    int tope;           // Índice del elemento en la cima de la pila
 
 public:
-    Pila() : tope(-1) {}
+    Pila() : tope(-1) {} // Inicializar tope en -1 (pila vacía)
 
+    // Método para apilar un empleado
     void push(const Empleado& emp) {
         if (llena()) {
             std::cout << "La pila esta llena, no se puede apilar." << std::endl;
@@ -33,6 +34,7 @@ public:
         datos[tope] = emp;
     }
 
+    // Método para desapilar un empleado
     void pop() {
         if (vacia()) {
             std::cout << "La pila esta vacia, no se puede desapilar." << std::endl;
@@ -41,19 +43,21 @@ public:
         tope--;
     }
 
+    // Método para obtener el empleado en la cima de la pila
     Empleado top() const {
         if (vacia()) {
             std::cout << "La pila esta vacia, no hay elementos." << std::endl;
-            return Empleado();
+            return Empleado(); // Retorna un empleado vacío
+        }
         return datos[tope];
     }
 
-
+    // Método para verificar si la pila está vacía
     bool vacia() const {
         return tope == -1;
     }
 
-
+    // Método para verificar si la pila está llena
     bool llena() const {
         return tope == MAX - 1;
     }
@@ -64,9 +68,9 @@ void menu() {
     int opcion;
     do {
         std::cout << "\nMenu:\n";
-        std::cout << "1. Push\n";
-        std::cout << "2. Pop\n";
-        std::cout << "3. Top\n";
+        std::cout << "1. Agregar\n";
+        std::cout << "2. Eliminar\n";
+        std::cout << "3. Mostrar\n";
         std::cout << "4. Salir\n";
         std::cout << "Seleccione una opcion: ";
         std::cin >> opcion;
@@ -91,12 +95,10 @@ void menu() {
                 break;
             }
             case 3: {
+                Empleado emp = pila.top();
                 if (!pila.vacia()) {
-                    Empleado emp = pila.top();
                     std::cout << "Empleado en la cima de la pila:\n";
                     emp.mostrar();
-                } else {
-                    std::cout << "La pila esta vacia, no hay elementos para mostrar." << std::endl;
                 }
                 break;
             }
