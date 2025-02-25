@@ -1,0 +1,193 @@
+#include <iostream>
+#include <string>
+#define MAX 100  
+
+class Empleado {
+public:
+    std::string nombre;
+    int id;
+    double salario;
+
+    Empleado(std::string nombre = "", int id = 0, double salario = 0.0)
+        : nombre(nombre), id(id), salario(salario) {}
+
+    bool operator==(const Empleado& otro) const {
+        return nombre == otro.nombre && id == otro.id && salario == otro.salario;
+    }
+
+    void mostrar() const {
+        std::cout << "Nombre: " << nombre << ", ID: " << id << ", Salario: " << salario << std::endl;
+    }
+};
+
+class ListaEstatica {
+private:
+    Empleado datos[MAX];
+    int tam;
+
+public:
+    ListaEstatica() : tam(0) {}
+
+    int Inserta(const Empleado& emp, int pos) {
+        if (Llena()) {
+            std::cout << "La lista esta llena, no se puede insertar." << std::endl;
+            return -1;
+        }
+        if (pos < 0 || pos > tam) {
+            std::cout << "Posicion invalida." << std::endl;
+            return -1;
+        }
+        for (int i = tam; i > pos; --i) {
+            datos[i] = datos[i - 1];
+        }
+        datos[pos] = emp;
+        tam++;
+        return pos;
+    }
+
+    int Agrega(const Empleado& emp) {
+        if (Llena()) {
+            std::cout << "La lista esta llena, no se puede agregar." << std::endl;
+            return -1;
+        }
+        datos[tam] = emp;
+        tam++;
+        return tam - 1;
+    }
+
+    int Busca(const Empleado& emp) const {
+        for (int i = 0; i < tam; ++i) {
+            if (datos[i] == emp) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    int Elimina(int pos) {
+        if (Vacia()) {
+            std::cout << "La lista esta vacia, no se puede eliminar." << std::endl;
+            return -1;
+        }
+        if (pos < 0 || pos >= tam) {
+            std::cout << "Posicion invalida." << std::endl;
+            return -1;
+        }
+        for (int i = pos; i < tam - 1; ++i) {
+            datos[i] = datos[i + 1];
+        }
+        tam--;
+        return pos;
+    }
+
+    int Vacia() const {
+        return tam == 0;
+    }
+
+    int Llena() const {
+        return tam == MAX;
+    }
+
+    void Muestra() const {
+        if (Vacia()) {
+            std::cout << "La lista esta vacia." << std::endl;
+            return;
+        }
+        for (int i = 0; i < tam; ++i) {
+            datos[i].mostrar();
+        }
+    }
+};
+
+void menu() {
+    ListaEstatica lista;
+    int opcion;
+    do {
+        std::cout << "\nMenu:\n";
+        std::cout << "1. Agrega\n";
+        std::cout << "2. Buscar\n";
+        std::cout << "3. Elimina\n";
+        std::cout << "4. Inserta\n";
+        std::cout << "5. Muestra\n";
+        std::cout << "6. Salir\n";
+        std::cout << "Seleccione una opcion: ";
+        std::cin >> opcion;
+
+        switch (opcion) {
+            case 1: {
+                std::string nombre;
+                int id;
+                double salario;
+                std::cout << "Ingrese nombre: ";
+                std::cin >> nombre;
+                std::cout << "Ingrese ID: ";
+                std::cin >> id;
+                std::cout << "Ingrese salario: ";
+                std::cin >> salario;
+                Empleado emp(nombre, id, salario);
+                lista.Agrega(emp);
+                break;
+            }
+            case 2: {
+                std::string nombre;
+                int id;
+                double salario;
+                std::cout << "Ingrese nombre: ";
+                std::cin >> nombre;
+                std::cout << "Ingrese ID: ";
+                std::cin >> id;
+                std::cout << "Ingrese salario: ";
+                std::cin >> salario;
+                Empleado emp(nombre, id, salario);
+                int pos = lista.Busca(emp);
+                if (pos != -1) {
+                    std::cout << "Empleado encontrado en la posicion: " << pos << std::endl;
+                } else {
+                    std::cout << "Empleado no encontrado." << std::endl;
+                }
+                break;
+            }
+            case 3: {
+                int pos;
+                std::cout << "Ingrese la posicion del empleado a eliminar: ";
+                std::cin >> pos;
+                lista.Elimina(pos);
+                break;
+            }
+            case 4: {
+                std::string nombre;
+                int id;
+                double salario;
+                int pos;
+                std::cout << "Ingrese nombre: ";
+                std::cin >> nombre;
+                std::cout << "Ingrese ID: ";
+                std::cin >> id;
+                std::cout << "Ingrese salario: ";
+                std::cin >> salario;
+                std::cout << "Ingrese la posicion donde desea insertar: ";
+                std::cin >> pos;
+                Empleado emp(nombre, id, salario);
+                lista.Inserta(emp, pos);
+                break;
+            }
+            case 5: {
+                lista.Muestra();
+                break;
+            }
+            case 6: {
+                std::cout << "Saliendo del programa..." << std::endl;
+                break;
+            }
+            default: {
+                std::cout << "Opcion invalida. Intente de nuevo." << std::endl;
+                break;
+            }
+        }
+    } while (opcion != 6);
+}
+
+int main() {
+    menu();
+    return 0;
+}
