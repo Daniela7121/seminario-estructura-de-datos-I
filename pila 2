@@ -1,0 +1,128 @@
+#include <iostream>
+#include <string>
+#define MAX 100  // Tamaño máximo de la pila
+
+class Empleado {
+public:
+    std::string nombre;
+    int id;
+    double salario;
+
+    Empleado(std::string nombre = "", int id = 0, double salario = 0.0)
+        : nombre(nombre), id(id), salario(salario) {}
+
+    void mostrar() const {
+        std::cout << "Nombre: " << nombre << ", ID: " << id << ", Salario: " << salario << std::endl;
+    }
+};
+
+class Pila {
+private:
+    Empleado datos[MAX]; // Arreglo para almacenar los elementos de la pila
+    int tope;           // Índice del elemento en la cima de la pila
+
+public:
+    Pila() : tope(-1) {} // Inicializar tope en -1 (pila vacía)
+
+    // Sobrecarga del operador << para apilar un empleado
+    Pila& operator<<(const Empleado& emp) {
+        if (llena()) {
+            std::cout << "La pila esta llena, no se puede apilar." << std::endl;
+            return *this;
+        }
+        tope++;
+        datos[tope] = emp;
+        return *this;
+    }
+
+    // Sobrecarga del operador >> para desapilar un empleado
+    Pila& operator>>(Empleado& emp) {
+        if (vacia()) {
+            std::cout << "La pila esta vacia, no se puede desapilar." << std::endl;
+            return *this;
+        }
+        emp = datos[tope];
+        tope--;
+        return *this;
+    }
+
+    // Sobrecarga del operador * para obtener el empleado en la cima de la pila
+    Empleado operator*() const {
+        if (vacia()) {
+            std::cout << "La pila esta vacia, no hay elementos." << std::endl;
+            return Empleado(); // Retorna un empleado vacío
+        }
+        return datos[tope];
+    }
+
+    // Método para verificar si la pila está vacía
+    bool vacia() const {
+        return tope == -1;
+    }
+
+    // Método para verificar si la pila está llena
+    bool llena() const {
+        return tope == MAX - 1;
+    }
+};
+
+void menu() {
+    Pila pila;
+    int opcion;
+    do {
+        std::cout << "\nMenu:\n";
+        std::cout << "1. Agregar\n";
+        std::cout << "2. Eliminar\n";
+        std::cout << "3. Mostrar\n";
+        std::cout << "4. Salir\n";
+        std::cout << "Seleccione una opcion: ";
+        std::cin >> opcion;
+
+        switch (opcion) {
+            case 1: {
+                std::string nombre;
+                int id;
+                double salario;
+                std::cout << "Ingrese nombre: ";
+                std::cin >> nombre;
+                std::cout << "Ingrese ID: ";
+                std::cin >> id;
+                std::cout << "Ingrese salario: ";
+                std::cin >> salario;
+                Empleado emp(nombre, id, salario);
+                pila << emp; // Usando el operador sobrecargado <<
+                break;
+            }
+            case 2: {
+                Empleado emp;
+                pila >> emp; // Usando el operador sobrecargado >>
+                if (!pila.vacia()) {
+                    std::cout << "Empleado eliminado de la pila:\n";
+                    emp.mostrar();
+                }
+                break;
+            }
+            case 3: {
+                Empleado emp = *pila; // Usando el operador sobrecargado *
+                if (!pila.vacia()) {
+                    std::cout << "Empleado en la cima de la pila:\n";
+                    emp.mostrar();
+                }
+                break;
+            }
+            case 4: {
+                std::cout << "Saliendo del programa..." << std::endl;
+                break;
+            }
+            default: {
+                std::cout << "Opcion invalida. Intente de nuevo." << std::endl;
+                break;
+            }
+        }
+    } while (opcion != 4);
+}
+
+int main() {
+    menu();
+    return 0;
+}
