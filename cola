@@ -1,0 +1,153 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+const int MAX = 100;
+
+struct Constancia {
+    string nombreAlumno;
+    string carrera;
+    int materiasAprobadas;
+    float promedio;
+};
+
+class Cola {
+private:
+    Constancia datos[MAX];
+    int frente;
+    int fin;
+    int cantidad;
+
+public:
+    Cola() {
+        frente = 0;
+        fin = -1;
+        cantidad = 0;
+    }
+
+    bool estaLlena() const {
+        return cantidad == MAX;
+    }
+
+    bool estaVacia() const {
+        return cantidad == 0;
+    }
+
+
+    Cola& operator<<(const Constancia& c) {
+        if (!estaLlena()) {
+            fin = (fin + 1) % MAX;
+            datos[fin] = c;
+            cantidad++;
+        } else {
+            cout << "La cola esta llena. No se puede encolar.\n";
+        }
+        return *this;
+    }
+
+
+    Cola& operator>>(Constancia& c) {
+        if (!estaVacia()) {
+            c = datos[frente];
+            frente = (frente + 1) % MAX;
+            cantidad--;
+        } else {
+            cout << "La cola esta vacia. No hay constancias por elaborar.\n";
+        }
+        return *this;
+    }
+
+    int getCantidad() const {
+        return cantidad;
+    }
+};
+
+
+int leerEntero(string mensaje) {
+    int valor;
+    while (true) {
+        cout << mensaje;
+        cin >> valor;
+        if (cin.fail() || valor < 0) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Valor invalido. Intente de nuevo.\n";
+        } else {
+            cin.ignore();
+            return valor;
+        }
+    }
+}
+
+
+float leerPromedio() {
+    float promedio;
+    while (true) {
+        cout << "Promedio general (0.0 - 10.0): ";
+        cin >> promedio;
+        if (cin.fail() || promedio < 0.0 || promedio > 10.0) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Promedio invalido. Intente de nuevo.\n";
+        } else {
+            cin.ignore();
+            return promedio;
+        }
+    }
+}
+
+
+int main() {
+    Cola cola;
+    int opcion;
+
+    do {
+        cout << "\n=== MENU CONSTANCIAS ===\n";
+        cout << "1. Alta de solicitud\n";
+        cout << "2. Elaborar constancia\n";
+        cout << "3. Ver solicitudes pendientes\n";
+        cout << "4. Salir\n";
+        cout << "Seleccione una opcion: ";
+        cin >> opcion;
+        cin.ignore();
+
+        if (opcion == 1) {
+            Constancia nueva;
+            cout << "\nNombre del alumno: ";
+            getline(cin, nueva.nombreAlumno);
+            cout << "Carrera: ";
+            getline(cin, nueva.carrera);
+            nueva.materiasAprobadas = leerEntero("Total de materias aprobadas: ");
+            nueva.promedio = leerPromedio();
+
+            cola << nueva;
+            cout << "Solicitud encolada correctamente.\n";
+
+        } else if (opcion == 2) {
+            if (!cola.estaVacia()) {
+                Constancia elaborada;
+                cola >> elaborada;
+
+                cout << "\n--- CONSTANCIA ELABORADA ---\n";
+                cout << "Alumno: " << elaborada.nombreAlumno << endl;
+                cout << "Carrera: " << elaborada.carrera << endl;
+                cout << "Materias aprobadas: " << elaborada.materiasAprobadas << endl;
+                cout << "Promedio general: " << elaborada.promedio << endl;
+            } else {
+                cout << "\nNo hay solicitudes en la cola.\n";
+            }
+
+        } else if (opcion == 3) {
+            cout << "\nSolicitudes pendientes: " << cola.getCantidad() << endl;
+
+        } else if (opcion == 4) {
+            cout << "Saliendo del programa...\n";
+
+        } else {
+            cout << "Opcion invalida. Intente de nuevo.\n";
+        }
+
+    } while (opcion != 4);
+
+    return 0;
+}
