@@ -1,0 +1,138 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <limits> // Para validar entrada
+using namespace std;
+
+struct Solicitud {
+    string nombreAlumno;
+    string carrera;
+    string preparatoria;
+    float promedio;
+};
+
+class ListaSolicitudes {
+private:
+    vector<Solicitud> solicitudes;
+    bool estaOrdenada = false;
+
+public:
+    void agregarSolicitud(const Solicitud& s) {
+        solicitudes.push_back(s);
+        estaOrdenada = false; // Nueva solicitud → hay que reordenar
+    }
+
+    void ordenarPorPromedio() {
+        quicksort(0, solicitudes.size() - 1);
+        estaOrdenada = true;
+    }
+
+    void quicksort(int izquierda, int derecha) {
+        if (izquierda < derecha) {
+            int i = izquierda;
+            int j = derecha;
+            float pivote = solicitudes[(izquierda + derecha) / 2].promedio;
+
+            while (i <= j) {
+                while (solicitudes[i].promedio > pivote) i++;
+                while (solicitudes[j].promedio < pivote) j--;
+                if (i <= j) {
+                    swap(solicitudes[i], solicitudes[j]);
+                    i++;
+                    j--;
+                }
+            }
+            quicksort(izquierda, j);
+            quicksort(i, derecha);
+        }
+    }
+
+    int buscarSolicitud(string nombre) {
+        if (!estaOrdenada) {
+            ordenarPorPromedio(); 
+        }
+
+        for (int i = 0; i < solicitudes.size(); i++) {
+            if (solicitudes[i].nombreAlumno == nombre) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    void mostrarSolicitud(int indice) {
+        if (indice >= 0 && indice < solicitudes.size()) {
+            Solicitud s = solicitudes[indice];
+            cout << "\n--- Solicitud encontrada ---" << endl;
+            cout << "Nombre: " << s.nombreAlumno << endl;
+            cout << "Carrera: " << s.carrera << endl;
+            cout << "Preparatoria: " << s.preparatoria << endl;
+            cout << "Promedio: " << s.promedio << endl;
+            cout << "Lugar en la lista (por promedio): " << indice + 1 << endl;
+        } else {
+            cout << "\nLa solicitud no fue encontrada. Debe darla de alta." << endl;
+        }
+    }
+};
+
+float leerPromedio() {
+    float promedio;
+    while (true) {
+        cout << "Promedio (0.0 - 10.0): ";
+        cin >> promedio;
+
+        if (cin.fail() || promedio < 0 || promedio > 10) {
+            cout << "Entrada invalida. Intente de nuevo.\n";
+            cin.clear(); 
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+        } else {
+            cin.ignore(); 
+            return promedio;
+        }
+    }
+}
+
+int main() {
+    ListaSolicitudes lista;
+    int opcion;
+
+    do {
+        cout << "\n--- MENU ---\n";
+        cout << "1. Alta de solicitud\n";
+        cout << "2. Buscar solicitud\n";
+        cout << "3. Salir\n";
+        cout << "Seleccione una opcion: ";
+        cin >> opcion;
+        cin.ignore(); 
+
+        if (opcion == 1) {
+            Solicitud nueva;
+            cout << "\nNombre del alumno: ";
+            getline(cin, nueva.nombreAlumno);
+            cout << "Carrera: ";
+            getline(cin, nueva.carrera);
+            cout << "Preparatoria: ";
+            getline(cin, nueva.preparatoria);
+            nueva.promedio = leerPromedio();
+
+            lista.agregarSolicitud(nueva);
+            cout << "Solicitud agregada correctamente.\n";
+
+        } else if (opcion == 2) {
+            string nombre;
+            cout << "\nIngrese el nombre del alumno a buscar: ";
+            getline(cin, nombre);
+            int indice = lista.buscarSolicitud(nombre);
+            lista.mostrarSolicitud(indice);
+
+        } else if (opcion == 3) {
+            cout << "Saliendo del programa...\n";
+        } else {
+            cout << "Opcion invalida. Intente de nuevo.\n";
+        }
+
+    } while (opcion != 3);
+
+    return 0;
+}
